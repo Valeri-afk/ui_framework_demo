@@ -13,9 +13,9 @@ set(UI_FRAMEWORK_SDL_GIT_TAG "release-3.2.0")
 set(UI_FRAMEWORK_SDL_IMAGE_GIT_TAG "release-3.2.0")
 set(UI_FRAMEWORK_SDL_TTF_GIT_TAG "release-3.2.0")
 
-# Build SDL and its addons with one consistent static-linking policy.
-set(SDL_SHARED OFF CACHE BOOL "Build SDL3 shared library" FORCE)
-set(SDL_STATIC ON CACHE BOOL "Build SDL3 static library" FORCE)
+# Build SDL and its addons with one consistent shared-linking policy.
+set(SDL_SHARED ON CACHE BOOL "Build SDL3 shared library" FORCE)
+set(SDL_STATIC OFF CACHE BOOL "Build SDL3 static library" FORCE)
 set(SDL_TESTS OFF CACHE BOOL "Build SDL3 tests" FORCE)
 set(SDL_EXAMPLES OFF CACHE BOOL "Build SDL3 examples" FORCE)
 set(SDL_INSTALL OFF CACHE BOOL "Install SDL3" FORCE)
@@ -28,10 +28,7 @@ FetchContent_Declare(
     OVERRIDE_FIND_PACKAGE
 )
 
-# SDL3_image 3.2.0 otherwise configures a shared target as well. Disable it
-# so it does not reference the unavailable SDL3::SDL3-shared target.
-set(SDLIMAGE_SHARED OFF CACHE BOOL "Build SDL3_image shared library" FORCE)
-set(SDLIMAGE_STATIC ON CACHE BOOL "Build SDL3_image static library" FORCE)
+# Keep optional SDL_image features small for the smoke test.
 set(SDLIMAGE_SAMPLES OFF CACHE BOOL "Build SDL3_image samples" FORCE)
 set(SDLIMAGE_TESTS OFF CACHE BOOL "Build SDL3_image tests" FORCE)
 set(SDLIMAGE_INSTALL OFF CACHE BOOL "Install SDL3_image" FORCE)
@@ -53,8 +50,6 @@ FetchContent_Declare(
 
 # SDL_ttf uses vendored third-party dependencies so the compatibility test
 # does not depend on system FreeType/HarfBuzz installations.
-set(SDLTTF_SHARED OFF CACHE BOOL "Build SDL3_ttf shared library" FORCE)
-set(SDLTTF_STATIC ON CACHE BOOL "Build SDL3_ttf static library" FORCE)
 set(SDLTTF_VENDORED ON CACHE BOOL "Use vendored SDL_ttf dependencies" FORCE)
 set(SDLTTF_SAMPLES OFF CACHE BOOL "Build SDL3_ttf samples" FORCE)
 set(SDLTTF_TESTS OFF CACHE BOOL "Build SDL3_ttf tests" FORCE)
