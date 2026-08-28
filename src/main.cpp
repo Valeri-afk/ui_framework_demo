@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <memory>
 
 #include <SDL3/SDL.h>
@@ -13,6 +14,7 @@ namespace
 {
 constexpr int kWindowWidth = 900;
 constexpr int kWindowHeight = 600;
+constexpr int kSmokeFrames = 30;
 
 class DemoRoot final : public ui::StackPanelNode
 {
@@ -30,8 +32,11 @@ public:
 };
 }
 
-int main()
+int main(int argc, char** argv)
 {
+    const bool smokeMode =
+        argc > 1 && argv[1] != nullptr && std::strcmp(argv[1], "--smoke") == 0;
+
     const int compiledMajor = SDL_MAJOR_VERSION;
     const int compiledMinor = SDL_MINOR_VERSION;
     const int compiledPatch = SDL_MICRO_VERSION;
@@ -41,18 +46,6 @@ int main()
         compiledMajor,
         compiledMinor,
         compiledPatch);
-
-    if (compiledMajor != 3 || compiledMinor != 2 || compiledPatch != 0)
-    {
-        std::fprintf(
-            stderr,
-            "ERROR: this demo is intended to validate SDL 3.2.0, but the "
-            "compiled headers report %d.%d.%d.\n",
-            compiledMajor,
-            compiledMinor,
-            compiledPatch);
-        return 1;
-    }
 
     if (!SDL_Init(SDL_INIT_VIDEO))
     {
@@ -64,7 +57,7 @@ int main()
     SDL_Renderer* renderer = nullptr;
 
     if (!SDL_CreateWindowAndRenderer(
-            "ui_framework - SDL 3.2.0 compatibility test",
+            smokeMode ? "ui_framework smoke test" : "ui_framework demo",
             kWindowWidth,
             kWindowHeight,
             SDL_WINDOW_RESIZABLE,
@@ -84,20 +77,21 @@ int main()
     auto root = std::make_unique<DemoRoot>();
 
     auto button = std::make_unique<ui::Button>();
-    button->setText("SDL 3.2.0 + UI Framework");
+    button->setText("SDL compatibility + UI Framework");
     button->setSize(ui::LayoutSizeValue::fixed(420.0f, 64.0f));
     button->setBackgroundColor(ui::Colors::camel);
     button->setTextColor(ui::Colors::white);
 
     button->on<ui::ButtonActivatedEvent>([](ui::ButtonActivatedEvent&, ui::Node&)
     {
-        std::puts("Button activated - SDL 3.2.0 compatibility path is alive.");
+        std::puts("Button activated - UI Framework consumer path is alive.");
     });
 
     root->addChild(std::move(button), root->getChildCount());
     uiManager.addRoot(std::move(root));
 
     bool running = true;
+    int frames = 0;
     std::uint64_t previousTicks = SDL_GetTicks();
 
     while (running)
@@ -121,6 +115,17 @@ int main()
         SDL_RenderClear(renderer);
         uiManager.render(renderer);
         SDL_RenderPresent(renderer);
+
+        ++frames;
+        if (smokeMode && frames >= kSmokeFrames)
+        {
+            running = false;
+        }
+    }
+
+    if (smokeMode)
+    {
+        std::puts("ui_framework smoke test completed successfully.");
     }
 
     SDL_DestroyRenderer(renderer);
