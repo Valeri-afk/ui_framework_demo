@@ -1,8 +1,8 @@
+#include <cstdint>
 #include <cstdio>
 #include <memory>
 
 #include <SDL3/SDL.h>
-#include <SDL3_ttf/SDL_ttf.h>
 
 #include "ui_framework/ui_manager.hpp"
 #include "ui_framework/components/button.hpp"
