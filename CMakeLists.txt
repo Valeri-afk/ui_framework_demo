@@ -30,8 +30,8 @@ FetchContent_Declare(
 )
 
 # Keep optional SDL_image features small for the smoke test. The framework
-# still links SDL3_image and SDL3_ttf because they are part of its dependency
-# contract.
+# still links SDL3_image and SDL3_ttf because they are part of its public
+# dependency contract.
 set(SDLIMAGE_SAMPLES OFF CACHE BOOL "Build SDL3_image samples" FORCE)
 set(SDLIMAGE_TESTS OFF CACHE BOOL "Build SDL3_image tests" FORCE)
 set(SDLIMAGE_INSTALL OFF CACHE BOOL "Install SDL3_image" FORCE)
@@ -51,6 +51,9 @@ FetchContent_Declare(
     OVERRIDE_FIND_PACKAGE
 )
 
+# SDL_ttf 3.2.0 can use vendored copies of its third-party dependencies.
+# This keeps the compatibility test independent of system FreeType/HarfBuzz.
+set(SDLTTF_VENDORED ON CACHE BOOL "Use vendored SDL_ttf dependencies" FORCE)
 set(SDLTTF_SAMPLES OFF CACHE BOOL "Build SDL3_ttf samples" FORCE)
 set(SDLTTF_TESTS OFF CACHE BOOL "Build SDL3_ttf tests" FORCE)
 set(SDLTTF_INSTALL OFF CACHE BOOL "Install SDL3_ttf" FORCE)
