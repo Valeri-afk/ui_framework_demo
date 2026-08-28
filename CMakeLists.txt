@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 3.24)
+
+if(NOT WIN32)
+    message(FATAL_ERROR "ui_framework_demo is Windows-only and must be configured on Windows.")
+endif()
+
 project(ui_framework_demo VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -98,18 +103,16 @@ target_link_libraries(ui_framework_demo
 )
 
 # Keep the runtime DLLs next to the demo executable so the smoke test can be
-# launched directly from the build tree on Windows. ui_framework itself is a
-# static library; its SDL dependencies are the runtime DLLs we need here.
-if(WIN32)
-    add_custom_command(
-        TARGET ui_framework_demo
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_RUNTIME_DLLS:ui_framework_demo>
-            $<TARGET_FILE_DIR:ui_framework_demo>
-        COMMAND_EXPAND_LISTS
-    )
-endif()
+# launched directly from the Debug build tree on Windows. ui_framework itself
+# is a static library; its SDL dependencies are the runtime DLLs needed here.
+add_custom_command(
+    TARGET ui_framework_demo
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_RUNTIME_DLLS:ui_framework_demo>
+        $<TARGET_FILE_DIR:ui_framework_demo>
+    COMMAND_EXPAND_LISTS
+)
 
 message(STATUS "ui_framework SDL3 compatibility test: ${UI_FRAMEWORK_SDL_VERSION}")
 message(STATUS "SDL3_image version: ${UI_FRAMEWORK_SDL_IMAGE_VERSION}")
