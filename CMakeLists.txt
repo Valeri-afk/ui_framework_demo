@@ -82,6 +82,20 @@ target_link_libraries(ui_framework_demo
         ui_framework::ui_framework
 )
 
+# Keep the runtime DLLs next to the demo executable so the smoke test can be
+# launched directly from the build tree on Windows. ui_framework itself is a
+# static library; its SDL dependencies are the runtime DLLs we need here.
+if(WIN32)
+    add_custom_command(
+        TARGET ui_framework_demo
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_RUNTIME_DLLS:ui_framework_demo>
+            $<TARGET_FILE_DIR:ui_framework_demo>
+        COMMAND_EXPAND_LISTS
+    )
+endif()
+
 message(STATUS "ui_framework SDL3 compatibility test: ${UI_FRAMEWORK_SDL_VERSION}")
 message(STATUS "SDL3 source: ${SDL3_SOURCE_DIR}")
 message(STATUS "SDL3_image source: ${SDL3_image_SOURCE_DIR}")
